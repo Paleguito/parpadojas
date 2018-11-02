@@ -1,0 +1,106 @@
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded header-nav">
+    <img src="./assets/img/logokpi.png" alt="" class="logokpi2">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-start" id="navbarTogglerDemo02">
+        <img src="./assets/img/logokpi.png" alt="" class="logokpi">
+        <ul class="navbar-nav ml-auto p-2 navegacion">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-togglen content-noti" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="numero-notificaciones">100</span>
+                    <span class="mobil">Notificaciones</span>
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                </a>
+                <div class="dropdown-menu noti">
+                    <div class="notificaciones">
+                        <li class="ittem-notificaciones inicial">Notificaciones</li>
+                        <li [routerLink]="['/app/notification/vew/', not.Id]" class="ittem-notificaciones" *ngFor="let not of notificationService.info">{{ not.Name }} <i class="fa fa-angle-right" aria-hidden="true"></i></li>
+                        <li class="ittem-notificaciones final text-center" [routerLink]="['/app/notification/']">Ver todas las notificaciones</li>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item oculto-web" *ngIf="rol == '1' || rol == '2'">
+                <a [routerLink]="['/app/dashboard/']">
+                    <div class="content-icono">
+                        <img src="./assets/img/dashboard.png" alt="">
+                        <span> {{'APP.NAVBAR.DASHBOARD'| translate}} </span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item oculto-web" *ngIf="rol == '1' || rol == '2'">
+                <a [routerLink]="['/app/management/']">
+                    <div class="content-icono">
+                        <img src="./assets/img/indicadores.png" alt="">
+                        <span> {{'APP.NAVBAR.INDICATOR'| translate}} </span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item oculto-web" *ngIf="rol == '1' || rol == '2'">
+                <a [routerLink]="['/app/collections/']">
+                    <div class="content-icono">
+                        <img src="./assets/img/colecciones.png" alt="">
+                        <span> {{'APP.NAVBAR.COLLECTION'| translate}} </span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item oculto-web" *ngIf="rol == '1'">
+                <a [routerLink]="['/app/license/details']">
+                    <div class="content-icono">
+                        <img src="./assets/img/licencias.png" alt="">
+                        <span> {{'APP.NAVBAR.LICENSE'| translate}} </span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item oculto-web" *ngIf="rol == '1'">
+                <a [routerLink]="['/app/user/details']">
+                    <div class="content-icono">
+                        <img src="./assets/img/usuarios.png" alt="">
+                        <span> {{'APP.NAVBAR.USER'| translate}} </span>
+                    </div>
+                </a>
+            </li>
+            <li class="lang nav-item oculto-web">
+                <div class="content-icono">
+                    <ul>
+                        <li>
+                            <span> {{'APP.NAVBAR.LANG-EN'| translate}}
+                                <img src="./assets/img/ingles.png" alt="">
+                            </span>
+                        </li>
+                        <li>
+                            <span>{{'APP.NAVBAR.LANG-ES'| translate}}
+                                <img src="./assets/img/espaniol.png" alt="">
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <div class="media" *ngIf="personalInformationModel">
+                      <img class="d-flex align-self-center img-fluid mr-3" src="{{personalInformationModel.UrlImageProfile}}" alt="Generic placeholder image">
+                    <div class="media-body" >
+                        <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           {{personalInformationModel.FullName}}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" [routerLink]="['/app/user/profile']" routerLinkActive="router-link-active">Ver perfil</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <button *ngIf="!auth.isAuthenticated()" class="my-2 my-sm-0" type="button" [routerLink]="['/home']">
+                <i class="fa fa-sign-in" aria-hidden="true"></i>
+            </button>
+            <button *ngIf="auth.isAuthenticated()" class="my-2 my-sm-0" type="button" (click)="Logout()">
+                <img src="./assets/img/log-out.png" alt="">
+            </button>
+        </form>
+    </div>
+</nav>
+<div class="app-menu-dos">
+    <app-sidebar></app-sidebar>
+</div>
+

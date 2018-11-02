@@ -1,0 +1,403 @@
+<div *ngIf="Collections.length != 0">
+    <div>
+        <div>
+            <div class="content-listado-colecciones">
+                <div class="content-menu-listados">
+                    <div class="d-flex justify-content-start align-items-center text-uppercase shared-collection">
+                            Mis colecciones compartidas
+                    </div>
+
+                    <div style="height:80vh;overflow-y:auto;">
+                    <div class="app-acordeon-collections" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="card" *ngFor="let item of Collections">
+                            <div class="card-header d-flex justify-content-between align-items-center" role="tab" id="heading">
+                                <p class="mb-0">
+                                    {{item.Name}}
+                                </p>
+                                <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#collapse{{item.IdCollection}}" aria-expanded="true" aria-controls="collapseOne">
+                                         <i class="fa fa-tab" aria-hidden="true" ></i>
+                                </a>
+                            </div>
+                            <div id="collapse{{item.IdCollection}}" class="collapse" role="tabpanel" aria-labelledby="heading">
+                                <div class="card-block">
+                                    <ul>
+                                        <li><a (click)="setSelectedItem(item.IdCollection, 'Collections')">Ver Colección</a></li>
+                                        <li>
+                                            <a (click)="editCollection(item.IdCollection, item.Name)"> Editar Colección</a>
+                                        </li>
+                                        <li>
+                                            <a (click)="showModalDeleteCollection(item.IdCollection)">Eliminar Colección</a>
+                                        </li>
+                                        <li>
+                                            <a (click)="viewAllIndicatorData(item.IdCollection, item.PermissionWrite, 'Collections')">Ver datos</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   </div>
+
+                </div>
+            </div>
+
+            <div style="margin-left:350px;">
+                <div class="container-fluid-">
+                    <div class="row-">
+                        <nav class="breadcrumb background-transparent">
+                            <a class="breadcrumb-item" [routerLink]="['/app/main/']">Inicio</a>
+                            <span class="breadcrumb-item active">Colecciones</span>
+                        </nav>
+                    </div>
+                </div>
+                <div *ngIf="showCopies == true && Collections.length != 0 && selectedItem == -1" class="copy-collection">
+                    <div class="container-void">
+                        <strong>Para ver los KPIS selecciona</strong>
+                        <div class="panel-no-data">
+                            <div class="content-icono-no-data">
+                                <img src="./assets/img/exclamation.png" alt="" class="imagen-icono">
+                            </div>
+                            <p> una colección en la parte izquierda</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-table" *ngFor="let collection of currentCollections">
+                    <div class="condition" *ngIf="collection.IdCollection == selectedItem">
+                        <div class="cont-operaciones container-fluid-">
+                            <div class="container-row">
+                                <div class="container-col-collection">
+                                       <h5 class="name-collection">{{collection.Name}}</h5>
+                                        <a (click)="addIndicatorToCollection(collection.IdCollection, collection.Name )" class="content-tooltip">
+                                            <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                            <span class="tooltip-medida"> Agregar KPI a esta colección </span>
+                                        </a>
+                                </div>
+                                <div class="col-12- col-sm-6- col-md-6- col-lg-6- col-xl-6- text-right">
+                                    <i class="fa fa-bars ajustado-lateral data1 activet" aria-hidden="true" (click)="ChangeView(1)"></i>
+                                    <i class="fa fa-th ajustado-lateral data2" aria-hidden="true" (click)="ChangeView(2)"></i>
+                                    <form class="form-inline ajustado-lateral" #SearchForm="ngForm">
+                                        <input #indicator type="text" autocomplete="off" class="form-control" placeholder="Buscar" name="name" (keyup)="findIndicator(indicator.value)">
+                                        <button type="submit" class="lupa-icon">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="!finding">
+                            <!-- Copies -->
+                            <div *ngIf="collection.Indicators == 0" class="copy-collection">
+                                <div class="container-void">
+                                   <p>Actualmente no tienes kpis asociados a esta colección.</p>
+                                   <p>¿deseas agregar uno ahora?</p>
+                                   <button class="btn btn-score-kpi" (click)="addIndicatorToCollection(collection.IdCollection, collection.Name )">Agregar KPI a Colleccion</button>
+                                </div>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="tabla-content" *ngIf="typeView == 1">
+                                <table class="table table-striped animated fadeIn fast text-center table-resp" *ngIf="collection.Indicators != 0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Validity</th>
+                                            <th>Actualizacion</th>
+                                            <th>Revision</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let indicator of collection.Indicators">
+                                            <td>{{indicator.Name}}</td>
+                                            <td>{{indicator.Validity}}</td>
+                                            <td>{{indicator.Update}}</td>
+                                            <td>{{indicator.Review}}</td>
+                                            <td>{{indicator.Min}}</td>
+                                            <td>{{indicator.Max}}</td>
+                                            <td>
+                                                <span (click)="addDataIndicator(indicator.IdIndicatorByCollection, collection.PermissionWrite)">Añadir datos</span>
+                                                <div class="content-menu-desplegable" (click)="menu(indicator.IdIndicatorByCollection)">
+                                                    <i aria-hidden="true" class="fa fa-ellipsis-v" ></i>
+                                                    <div class="submenu submenu-tabla ittem-menu{{indicator.IdIndicatorByCollection}}">
+                                                        <ul>
+                                                            <!-- <li (click)="addIndicatorDashboard(indicator.IdIndicatorByCollection)">
+                                                                <a> Agregar a Dashboard</a>
+                                                            </li> -->
+                                                            <li *ngIf="collection.PermissionWrite" (click)="editIndicator(indicator.IdIndicatorByCollection)">
+                                                                <a>Editar</a>
+                                                            </li>
+                                                            <li (click)="showGraph(indicator.IdIndicatorByCollection)">
+                                                                <a>Mostrar gráfica</a>
+                                                            </li>
+                                                            <li *ngIf="collection.PermissionWrite" (click)="showModalDeleteIndicator(indicator.IdIndicatorByCollection)">
+                                                                <a>Delete</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Tabs -->
+                            <div class="tabla-content content-edit" *ngIf="typeView == 2">
+                                <div class="conatiner-fluid animated fadeIn fast">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mover-data" *ngFor="let indicator of collection.Indicators">
+                                            <div class="card mb-4">
+                                                <div class="card-block">
+                                                    <ul>
+                                                        <li>
+                                                            <strong>Name</strong>
+                                                        </li>
+                                                        <li>{{indicator.Name}}</li>
+                                                        <li>
+                                                            <strong>Validity</strong>
+                                                        </li>
+                                                        <li>{{indicator.Validity}}</li>
+                                                        <li>
+                                                            <strong>Actualizacion</strong>
+                                                        </li>
+                                                        <li>{{indicator.Update}}</li>
+                                                        <li>
+                                                            <strong>Revision</strong>
+                                                        </li>
+                                                        <li>{{indicator.Review}}</li>
+                                                    </ul>
+                                                    <div class="container-fluid">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <ul>
+                                                                    <li>
+                                                                        <strong>Min</strong>
+                                                                    </li>
+                                                                    <li>{{indicator.Min}}</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <ul>
+                                                                    <li>
+                                                                        <strong>Max</strong>
+                                                                    </li>
+                                                                    <li>{{indicator.Max}}</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="action">
+                                                        <i class="fa fa-plus-square-o block" aria-hidden="true" (click)="addDataIndicator(indicator.IdIndicatorByCollection, collection.PermissionWrite)"></i>
+                                                        <span>Añadir datos</span>
+                                                        <div class="content-compartir">
+                                                            <span *ngIf="collection.PermissionWrite">
+                                                                <i class="fa fa-trash-o" aria-hidden="true" (click)="showModalDeleteIndicator(indicator.IdIndicatorByCollection)"></i>
+                                                            </span>
+                                                            <!-- <span>
+                                                                <i class="fa fa-thumb-tack" aria-hidden="true" (click)="addIndicatorDashboard(indicator.IdIndicatorByCollection)"></i>
+                                                            </span> -->
+                                                            <span *ngIf="collection.PermissionWrite">
+                                                                <i class="fa fa-pencil" aria-hidden="true" (click)="editIndicator(indicator.IdIndicatorByCollection)"></i>
+                                                            </span>
+                                                            <span>
+                                                                <i class="fa fa-line-chart" aria-hidden="true" (click)="showGraph(indicator.IdIndicatorByCollection)"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Search Result -->
+                <div *ngIf="finding">
+                    <div class="tabla-content" *ngIf="typeView == 1">
+                        <table class="table table-striped animated fadeIn fast text-center" *ngIf="search.lenght != 0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Validity</th>
+                                    <th>Actualizacion</th>
+                                    <th>Revision</th>
+                                    <th>Min</th>
+                                    <th>Max</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let indicator of search">
+                                    <td>{{indicator.Name}}</td>
+                                    <td>{{indicator.Validity}}</td>
+                                    <td>{{indicator.Update}}</td>
+                                    <td>{{indicator.Review}}</td>
+                                    <td>{{indicator.Min}}</td>
+                                    <td>{{indicator.Max}}</td>
+                                    <td>
+                                        <span (click)="addDataIndicator(indicator.IdIndicatorByCollection, permissionCurrentCollection)"> Añadir Datos</span>
+                                        <div class="content-menu-desplegable">
+                                            <i aria-hidden="true" class="fa fa-ellipsis-v" (click)="menu(indicator.IdIndicatorByCollection)"></i>
+                                            <div class="submenu submenu-tabla ittem-menu{{indicator.IdIndicatorByCollection}}">
+                                                <ul>
+                                                    <!-- <li (click)="addIndicatorDashboard(indicator.IdIndicatorByCollection)">
+                                                        <a> Agregar a Dashboard</a>
+                                                    </li> -->
+                                                    <li *ngIf="permissionCurrentCollection" (click)="editIndicator(indicator.IdIndicatorByCollection)">
+                                                        <a>Editar</a>
+                                                    </li>
+                                                    <li (click)="showGraph(indicator.IdIndicatorByCollection)">
+                                                        <a>Mostrar gráfica</a>
+                                                    </li>
+                                                    <li *ngIf="permissionCurrentCollection" (click)="showModalDeleteIndicator(indicator.IdIndicatorByCollection)">
+                                                        <a>Delete</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tabla-content" *ngIf="typeView == 2">
+                        <div class="conatiner-fluid animated fadeIn fast">
+                            <div class="row">
+                                <div class="col-12 col-sm-4 col-md-3 col-lg-3 col-xl-3" *ngFor="let indicator of search">
+                                    <div class="card mb-4">
+                                        <div class="card-block">
+                                            <ul>
+                                                <li>
+                                                    <strong>Name</strong>
+                                                </li>
+                                                <li>{{indicator.Name}}</li>
+                                                <li>
+                                                    <strong>Validity</strong>
+                                                </li>
+                                                <li>{{indicator.Validity}}</li>
+                                                <li>
+                                                    <strong>Actualizacion</strong>
+                                                </li>
+                                                <li>{{indicator.Update}}</li>
+                                                <li>
+                                                    <strong>Revision</strong>
+                                                </li>
+                                                <li>{{indicator.Review}}</li>
+                                            </ul>
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <ul>
+                                                            <li>
+                                                                <strong>Min</strong>
+                                                            </li>
+                                                            <li>{{indicator.Min}}</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <ul>
+                                                            <li>
+                                                                <strong>Max</strong>
+                                                            </li>
+                                                            <li>{{indicator.Max}}</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="action">
+                                                <i class="fa fa-plus-square-o block" aria-hidden="true" (click)="addDataIndicator(indicator.IdIndicatorByCollection, permissionCurrentCollection)"></i>
+                                                <span>Añadir datos</span>
+                                                <div class="content-compartir">
+                                                    <span>
+                                                        <i class="fa fa-trash-o" aria-hidden="true" (click)="showModalDeleteIndicator(indicator.IdIndicatorByCollection)"></i>
+                                                    </span>
+                                                    <!-- <span>
+                                                        <i class="fa fa-thumb-tack" aria-hidden="true" (click)="addIndicatorDashboard(indicator.IdIndicatorByCollection)"></i>
+                                                    </span> -->
+                                                    <span *ngIf="permissionCurrentCollection">
+                                                        <i class="fa fa-pencil" aria-hidden="true" (click)="editIndicator(indicator.IdIndicatorByCollection)"></i>
+                                                    </span>
+                                                    <span>
+                                                        <i class="fa fa-line-chart" aria-hidden="true" (click)="showGraph(indicator.IdIndicatorByCollection)"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Search Result -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for delete a collection -->
+    <div class="modal fade modal-standar-generico" id="modal-delete-collection" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img class="img-modal" src="./assets/img/compartir_indicador.png" alt="">
+                    <div class="text-center">
+                        <h5>¿Realmente deseas eliminar esta colección</h5>
+                        <!-- <p>Consolidado Nacional de ventas</p> -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modal-confirm no-confirm" data-dismiss="modal">No, cancelar</button>
+                    <button type="button" class="btn btn-modal-confirm si-confirm">Si, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for delete a indicator -->
+    <div class="modal fade modal-standar-generico" id="modal-delete-indicator" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img class="img-modal" src="./assets/img/compartir_indicador.png" alt="">
+                    <div class="text-center">
+                        <h5>¿Realmente deseas eliminar este KPI?</h5>
+                        <!-- <p>Consolidado Nacional de ventas</p> -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modal-confirm no-confirm" data-dismiss="modal">No, cancelar</button>
+                    <button type="button" class="btn btn-modal-confirm si-confirm">Si, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div *ngIf="showCopies == true && Collections.length == 0" class="copy-collection">
+    <div class="content-no-data">
+        <div class="panel-no-data">
+            <div class="content-icono-no-data">
+                <img src="./assets/img/exclamation.png" alt="" class="imagen-icono">
+            </div>
+            <p> Aún no te han compartido colecciones.</p>
+        </div>
+    </div>
